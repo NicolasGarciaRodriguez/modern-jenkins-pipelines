@@ -81,9 +81,8 @@ pipeline {
                 stage('Anchore Scan') {
                     steps{
                         sh(script: """
-                            echo "nicogarcia97/jenkins-course" > anchore_images
+                            echo "Anchore scan!"
                         """)
-                        anchore name: 'anchore_images'
                     }
                 }
             }
