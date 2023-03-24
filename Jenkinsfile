@@ -63,5 +63,18 @@ pipeline {
                 }
             }
         }
+        stage('scan'){
+            steps{
+                // Install trivy
+                sh(script: """
+                    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.18.3
+                    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl > html.tpl
+                """)
+                //Scan
+                sh(script: """
+                    trivy nicogarcia97/jenkins-course
+                """)
+            }
+        }
     }
 }
