@@ -64,7 +64,7 @@ pipeline {
             }
         }
         stage('Scans'){
-            paralell{
+            parallel{
                 stage('Trivy Scan'){
                     steps{
                         // Install trivy
