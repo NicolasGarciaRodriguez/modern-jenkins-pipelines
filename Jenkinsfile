@@ -87,5 +87,57 @@ pipeline {
                 }
             }
         }
+        stage('Deploy to QA') {
+            environment {
+                ENVIRONMENT 'qa'
+            }
+            steps {
+                echo "DEploying to ${ENVIRONMENT}"
+                acsDeploy(
+                    azureCredentialsId: "azure-jenkins-app",
+                    configFilePaths: "**/*.yaml",
+                    containerService: "${ENVIRONMENT}-demo-cluster | AKS",
+                    resourceGroupName: "${ENVIRONMENT}-demo",
+                    sshCredentialsId: ""
+                )
+            }
+        }
+        stage('Approve PROD Deploy') {
+            when {
+                branch 'master'
+            }
+            options {
+                timeout(time: 1, unit: 'HOURS')
+            }
+            steps {
+                input message: 'Deploy?'
+            }
+            post {
+                success {
+                    echo 'Production deploy approved!'
+                }
+                aborted {
+                    echo 'Production deploy dennied!'
+                }
+            }
+        }
+        stage('Deploy to PROD') {
+            when {
+                branch 'master'
+            }
+            environment {
+                ENVIRONMENT 'prod'
+            }
+            steps {
+                echo "DEploying to ${ENVIRONMENT}"
+                acsDeploy(
+                    azureCredentialsId: "azure-jenkins-app",
+                    configFilePaths: "**/*.yaml",
+                    containerService: "${ENVIRONMENT}-demo-cluster | AKS",
+                    resourceGroupName: "${ENVIRONMENT}-demo",
+                    sshCredentialsId: ""
+                )
+            }
+        }
     }
 }
